@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "359602925923",
+    "project_id": "usw-chat-bot-app",
+    "storage_bucket": "usw-chat-bot-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359602925923:android:5a98daf814f09bc28f2356",
+        "android_client_info": {
+          "package_name": "com.example.usw_chat_bot_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCbuEC9iqAdNJrlunyNb7D4rokKixXfu8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
