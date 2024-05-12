@@ -1,17 +1,38 @@
-import 'package:flutter/material.dart';
-import 'package:test_file/default_Layout.dart';
-import 'package:velocity_x/velocity_x.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
-import 'account.dart';
-import 'home.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:usw_chat_bot_app/user_page/w_userPage.dart';
+import 'package:usw_chat_bot_app/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/auth_provider2.dart';
+import 'firebase_options.dart';
+import 'main_page/w_main_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
+  // runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider2()),
+      ],
+      child: const MaterialApp(
+        home: MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -23,18 +44,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late int index;
-  // late int loginState;
 
   @override
   void initState() {
     super.initState();
     index = 0;
-    // loginState = 0;
   }
 
   List page = [
-    home(),
-    account(),
+    const mainPage(),
+    const userPage(),
   ];
 
   @override
@@ -68,3 +87,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+

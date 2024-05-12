@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:test_file/account.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class home extends StatefulWidget {
-  const home({super.key});
+class logoutMainPage extends StatefulWidget {
+  const logoutMainPage({super.key});
 
   @override
-  State<home> createState() => _homeState();
+  State<logoutMainPage> createState() => _logoutMainPageState();
 }
 
-class _homeState extends State<home> {
+class _logoutMainPageState extends State<logoutMainPage> {
   late int loginIndex;
 
   @override
