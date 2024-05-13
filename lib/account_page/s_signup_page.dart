@@ -98,6 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     email: emailAddress,
                     password: password,
                   );
+                  await FirebaseAuth.instance.signOut();
                   Navigator.pop(context);
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {

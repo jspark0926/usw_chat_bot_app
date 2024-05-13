@@ -3,6 +3,7 @@
         android:label="usw_chat_bot_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

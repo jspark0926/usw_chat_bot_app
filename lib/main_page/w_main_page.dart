@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:usw_chat_bot_app/main_page/s_login_main_page.dart';
 import 'package:usw_chat_bot_app/main_page/s_logout_main_page.dart';
+import 'package:usw_chat_bot_app/provider/auth_provider2.dart';
 
-import '../auth_provider2.dart';
+
 
 class mainPage extends StatefulWidget {
   const mainPage({super.key});

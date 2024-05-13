@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -45,7 +44,7 @@ class DefaultLayout extends StatelessWidget {
               onPressed: null,
               icon: Image.asset('assets/images/usw_logo.png'),
             ).pOnly(left: 20),
-            Expanded(child: SizedBox()),
+            const Expanded(child: SizedBox()),
             Container(
               width: 80,
               height: 30,

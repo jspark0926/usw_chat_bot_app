@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:usw_chat_bot_app/provider/auth_provider2.dart';
 import '../account_page/s_find_password.dart';
 import '../account_page/s_find_id.dart';
 import '../account_page/s_signup_page.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class logoutUserPage extends StatefulWidget {
   const logoutUserPage({super.key});
@@ -15,7 +18,7 @@ class logoutUserPage extends StatefulWidget {
 class _logoutUserPageState extends State<logoutUserPage> {
   late String emailAddress = '';
   late String password = '';
-
+  late AuthProvider2 authProvider = Provider.of<AuthProvider2>(context, listen: false);
 
   @override
   Widget build(BuildContext context) {
@@ -61,16 +64,17 @@ class _logoutUserPageState extends State<logoutUserPage> {
                 },
                 child: "회원가입".text.black.size(16).make().pOnly(left: 20),
               ),
-              Expanded(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const FindId()));
-                  },
-                  child: "아이디 찾기".text.black.size(16).make().pOnly(left: 20),
-                ),
+              const Expanded(
+                child: SizedBox(),
+                // child: TextButton(
+                //   onPressed: () {
+                //     Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //             builder: (context) => const FindId()));
+                //   },
+                //   child: "아이디 찾기".text.black.size(16).make().pOnly(left: 20),
+                // ),
               ),
               TextButton(
                 onPressed: () {
@@ -79,7 +83,7 @@ class _logoutUserPageState extends State<logoutUserPage> {
                       MaterialPageRoute(
                           builder: (context) => const FindPassword()));
                 },
-                child: "비밀번호 찾기"
+                child: "비밀번호를 잊으셨나요?"
                     .text
                     .black
                     .size(16)
@@ -92,15 +96,15 @@ class _logoutUserPageState extends State<logoutUserPage> {
           Column(
             children: [
               IconButton(
-                onPressed: null,
-                icon: Image.asset(
-                  'assets/images/kakao_login_medium_narrow.png',
-                  width: 206,
-                  height: 46,
-                ),
-              ),
-              IconButton(
-                onPressed: null,
+                onPressed: () async {
+                  // authProvider.signInWithGoogle();
+                  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+                  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+                  final credential = GoogleAuthProvider.credential(
+                    accessToken: googleAuth?.accessToken,
+                    idToken: googleAuth?.idToken,
+                  );
+                },
                 icon: Image.asset(
                   'assets/images/android_light_sq_SU@1x.png',
                   width: 206,
@@ -116,38 +120,34 @@ class _logoutUserPageState extends State<logoutUserPage> {
                     await FirebaseAuth.instance.signInAnonymously();
                 print("Signed in with temporary account.");
               } on FirebaseAuthException catch (e) {
-                switch (e.code) {
-                  case "operation-not-allowed":
-                    print(
-                        "Anonymous auth hasn't been enabled for this project.");
-                    break;
-                  default:
-                    print("Unknown error.");
+                if (e.code == 'user-not-found') {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: '등록된 이메일이 없습니다'.text.bold.white.size(20).make(),
+                    ),
+                  );
+                } else if (e.code == 'wrong-password') {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: '비밀번호가 틀립니다.'.text.bold.white.size(20).make(),
+                    ),
+                  );
                 }
               }
             },
             child: Container(
-              width: 200,
+              width: 185,
               height: 45,
               decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(30),
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Center(child: ' 익명 로그인'.text.black.bold.size(20).make()),
+              child: Center(child: ' 익명 로그인'.text.white.bold.size(20).make()),
             ),
           ),
           HeightBox(10),
-          InkWell(
-            child: Container(
-              width: 200,
-              height: 45,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Center(child: '로그인'.text.black.bold.size(20).make()),
-            ),
-            onTap: () async {
+          OutlinedButton(
+            onPressed: () async {
               try {
                 final credential = await FirebaseAuth.instance
                     .signInWithEmailAndPassword(
@@ -160,6 +160,7 @@ class _logoutUserPageState extends State<logoutUserPage> {
                 }
               }
             },
+            child: '로그인'.text.black.bold.size(20).make(),
           ),
         ],
       ),

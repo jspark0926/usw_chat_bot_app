@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:usw_chat_bot_app/user_page/s_login_user_page.dart';
 import 'package:usw_chat_bot_app/user_page/s_logout_user_page.dart';
+
+import '../provider/auth_provider2.dart';
 
 class userPage extends StatefulWidget {
   const userPage({super.key});
@@ -11,34 +14,16 @@ class userPage extends StatefulWidget {
 }
 
 class _userPageState extends State<userPage> {
-  late bool? loginState;
-
-
-  @override
-  void initState() {
-    super.initState();
-    loginState = null;
-  }
 
   @override
   Widget build(BuildContext context) {
-    FirebaseAuth.instance
-        .authStateChanges()
-        .listen((User? user) {
-      if (user != null) {
-        setState(() {
-          loginState = true;
-        });
-      } else {
-        setState(() {
-          loginState = false;
-        });
-      }
-    });
-    if (loginState == false || loginState == null) {
-      return const logoutUserPage();
-    }  else {
+    final authProvider = Provider.of<AuthProvider2>(context);
+
+
+    if (authProvider.user != null) {
       return const loginUserPage();
+    } else {
+      return const logoutUserPage();
     }
   }
 }
