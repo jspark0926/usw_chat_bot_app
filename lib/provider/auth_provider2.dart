@@ -55,6 +55,11 @@ class AuthProvider2 extends ChangeNotifier {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
+  Future<void> resetPassword(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+
+
 
 }
 // Logger logger = Logger();

@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class ReceiveInquirePage extends StatefulWidget {
-  const ReceiveInquirePage({super.key});
+class receiveInquirePage extends StatefulWidget {
+  const receiveInquirePage({super.key});
 
   @override
-  State<ReceiveInquirePage> createState() => _ReceiveInquirePageState();
+  State<receiveInquirePage> createState() => _receiveInquirePageState();
 }
 
-class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
+class _receiveInquirePageState extends State<receiveInquirePage> {
+  late var inquireType = '';
+  late var inquireTitle = '';
+  late var inquireContent = '';
+
   final _controllerType = TextEditingController();
   final _controllerTitle = TextEditingController();
   final _controllerContents = TextEditingController();
@@ -45,48 +49,20 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
     _controllerType.text = _controllerType.text.trim();
     _controllerTitle.text = _controllerTitle.text.trim();
     _controllerContents.text = _controllerContents.text.trim();
-    if (loggedInUser != null) {
-      if (_controllerType.text.isNotEmpty) {
-        if (_controllerTitle.text.isNotEmpty) {
-          if (_controllerContents.text.isNotEmpty) {
-            FirebaseFirestore.instance.collection('inquire').add({
-              'type': _controllerType.text,
-              'title': _controllerTitle.text,
-              'contents': _controllerContents.text,
-              'sender': loggedInUser!.email,
-              'timestamp': Timestamp.now(),
-            });
-            _controllerType.clear();
-            _controllerTitle.clear();
-            _controllerContents.clear();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content:
-                '문의가 접수되었습니다'.text.bold.white.size(20).make(),
-              ),
-            );
-            Navigator.pop(context);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: '문의 내용을 입력해주세요'.text.bold.white.size(20).make(),
-              ),
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: '제목을 입력해주세요'.text.bold.white.size(20).make(),
-            ),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: '문의 유형이 선택되지 않았습니다'.text.bold.white.size(20).make(),
-          ),
-        );
-      }
+    if (loggedInUser != null &&
+        _controllerType.text.isNotEmpty &&
+        _controllerTitle.text.isNotEmpty &&
+        _controllerContents.text.isNotEmpty) {
+      FirebaseFirestore.instance.collection('inquire').add({
+        'type': _controllerType.text,
+        'title': _controllerTitle.text,
+        'contents': _controllerContents.text,
+        'sender': loggedInUser!.email,
+        'timestamp': Timestamp.now(),
+      });
+      _controllerType.clear();
+      _controllerTitle.clear();
+      _controllerContents.clear();
     }
   }
 
@@ -116,6 +92,11 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
                     horizontal: 10,
                   ),
                 ),
+                onChanged: (text) {
+                  setState(() {
+                    inquireType = text;
+                  });
+                },
               ).pSymmetric(h: 20),
               const HeightBox(20),
               Row(
@@ -136,6 +117,11 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
                     horizontal: 10,
                   ),
                 ),
+                onChanged: (text) {
+                  setState(() {
+                    inquireTitle = text;
+                  });
+                },
               ).pSymmetric(h: 20),
               const HeightBox(20),
               Row(
@@ -154,11 +140,49 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 30, horizontal: 10),
                 ),
+                onChanged: (text) {
+                  setState(() {
+                    inquireContent = text;
+                  });
+                },
               ).pSymmetric(h: 20),
               const HeightBox(40),
               OutlinedButton(
                 onPressed: () {
-                  _sendMessage();
+                  if (inquireType.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content:
+                            '문의 유형이 선택되지 않았습니다'.text.bold.white.size(20).make(),
+                      ),
+                    );
+                  } else {
+                    if (inquireTitle.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: '제목을 입력해주세요'.text.bold.white.size(20).make(),
+                        ),
+                      );
+                    } else {
+                      if (inquireContent.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                '문의 내용을 입력해주세요'.text.bold.white.size(20).make(),
+                          ),
+                        );
+                      } else {
+                        _sendMessage();
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                '문의가 접수되었습니다'.text.bold.white.size(20).make(),
+                          ),
+                        );
+                      }
+                    }
+                  }
                 },
                 child: '접수하기'.text.black.size(20).make(),
               ),
@@ -170,3 +194,14 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
     );
   }
 }
+{
+      FirebaseFirestore.instance.collection('inquire').add({
+        'type': _controllerType.text,
+        'title': _controllerTitle.text,
+        'contents': _controllerContents.text,
+        'sender': loggedInUser!.email,
+        'timestamp': Timestamp.now(),
+      });
+      _controllerType.clear();
+            _controllerTitle.clear();
+            _controllerContents.clear();

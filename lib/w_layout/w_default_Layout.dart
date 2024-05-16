@@ -9,20 +9,24 @@ class DefaultLayout extends StatelessWidget {
   final bool? bottomState;
   final Widget? bottomNavigationBar;
   final Widget? floatingActionButton;
+  final bool? resizeToAvoidBottomInset;
 
-  const DefaultLayout(
-      {super.key,
-        required this.loginState,
-        required this.child,
-        this.backgroundColor,
-        this.title,
-        this.bottomState,
-        this.bottomNavigationBar,
-        this.floatingActionButton,});
+  const DefaultLayout({
+    super.key,
+    required this.loginState,
+    required this.child,
+    this.backgroundColor,
+    this.title,
+    this.bottomState,
+    this.bottomNavigationBar,
+    this.floatingActionButton,
+    this.resizeToAvoidBottomInset,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       backgroundColor: backgroundColor ?? Colors.white,
       appBar: renderAppbar(),
       body: child,

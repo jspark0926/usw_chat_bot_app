@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:usw_chat_bot_app/chat_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class loginMainPage extends StatefulWidget {
@@ -10,22 +12,29 @@ class loginMainPage extends StatefulWidget {
 }
 
 class _loginMainPageState extends State<loginMainPage> {
+  late String userText = '';
+  final scrollController = ScrollController();
+  final focusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const HeightBox(10),
-        Expanded(child: Container(color: Colors.greenAccent,)),
-        const TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 10,
-            ),
-            labelText: 'Chat',
-          ),
-        ).pSymmetric(h: 10,v: 15),
-      ],
-    );
+    // return Column(
+    //   children: [
+    //     Expanded(child: ChatScreen()),
+    //     TextField(
+    //       onChanged: (text) {
+    //         setState(() {
+    //           userText = text;
+    //         });
+    //       },
+    //       obscureText: true,
+    //       decoration: const InputDecoration(
+    //         border: OutlineInputBorder(),
+    //         labelText: 'Password',
+    //       ),
+    //     ),
+    //   ],
+    // );
+    return ChatScreen();
   }
 }

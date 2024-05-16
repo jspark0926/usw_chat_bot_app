@@ -1,0 +1,90 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
+import 'package:velocity_x/velocity_x.dart';
+
+class aboutInquirePage extends StatefulWidget {
+  const aboutInquirePage({super.key});
+
+  @override
+  State<aboutInquirePage> createState() => _aboutInquirePageState();
+}
+
+class _aboutInquirePageState extends State<aboutInquirePage> {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+
+  final _auth = FirebaseAuth.instance;
+  User? loggedInUser;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        setState(() {
+          loggedInUser = user;
+        });
+        print(loggedInUser!.email);
+      } else {
+        // If the user is not logged in, handle appropriately
+        // For example, navigate to the login screen
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  getUserInfo() async {
+    var result =
+        await FirebaseFirestore.instance.collection('inquire').doc(uid).get();
+    return result.data();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultLayout(
+      loginState: true,
+      child: FutureBuilder(
+        future: getUserInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+              ),
+            );
+          } else if (!snapshot.hasData || snapshot.data == null) {
+            return Center(
+              child: '문의 내역이 없습니다'.text.black.bold.size(25).make(),
+            );
+          } else {
+            return snapshot.hasData
+                ? SingleChildScrollView(
+                    child: SafeArea(
+                      child: Column(
+                        children: [
+                          Text((snapshot.data as Map)['type']),
+                          Text((snapshot.data as Map)['title']),
+                          Text((snapshot.data as Map)['contents']),
+                          Text((snapshot.data as Map)['timestamp']),
+                        ],
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: '문의 내역이 없습니다'.text.black.bold.size(25).make(),
+                  );
+          }
+        },
+      ),
+    );
+  }
+}

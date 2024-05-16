@@ -1,12 +1,10 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:usw_chat_bot_app/provider/auth_provider2.dart';
 import 'package:usw_chat_bot_app/user_page/w_userPage.dart';
-import 'package:usw_chat_bot_app/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
 import 'firebase_options.dart';
 import 'main_page/w_main_page.dart';
 
@@ -43,6 +41,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late AuthProvider2 authProvider = Provider.of<AuthProvider2>(context);
+  // late PageIndexProvider pageIndexProvider = Provider.of<PageIndexProvider>(context, listen: false);
   late int index;
 
   @override
@@ -63,6 +63,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: DefaultLayout(
+        resizeToAvoidBottomInset: true,
         loginState: true,
         title: 'appbar',
         child: page[index],
@@ -90,5 +91,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-

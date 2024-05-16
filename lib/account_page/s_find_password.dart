@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:usw_chat_bot_app/provider/auth_provider2.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../w_default_Layout.dart';
+import '../w_layout/w_default_Layout.dart';
 
 class FindPassword extends StatefulWidget {
   const FindPassword({super.key});
@@ -11,68 +13,71 @@ class FindPassword extends StatefulWidget {
 }
 
 class _FindPasswordState extends State<FindPassword> {
+  late AuthProvider2 authProvider = Provider.of<AuthProvider2>(context, listen: false);
+  late var emailAdress = '';
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
       loginState: true,
-      child: Column(
-        children: [
-          const SizedBox(height: 150),
-          '수정상'.text.black.bold.size(80).make(),
-          '수원대 정보 만물상'.text.black.bold.size(20).make(),
-          const SizedBox(height: 50),
-          const TextField(
-            obscureText: false,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: '아이디 입력',
-            ),
-          ),
-          const HeightBox(30),
-          const TextField(
-            obscureText: true,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: '이메일 입력',
-            ),
-          ),
-          const HeightBox(30),
-          InkWell(
-            child: Container(
-              width: 200,
-              height: 45,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(30),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 150),
+            '수정상'.text.black.bold.size(80).make(),
+            '수원대 정보 만물상'.text.black.bold.size(20).make(),
+            const SizedBox(height: 100),
+            const HeightBox(30),
+            TextField(
+              obscureText: false,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: '이메일 입력',
               ),
-              child: Center(child: '인증번호 전송'.text.black.bold.size(20).make()),
-            ),
-            onTap: () {},
-          ),
-          const HeightBox(30),
-          const TextField(
-            obscureText: false,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: '인증번호 입력',
-            ),
-          ),
-          HeightBox(30),
-          InkWell(
-            child: Container(
-              width: 200,
-              height: 45,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(30),
+              onChanged: (text){
+                setState(() {
+                  emailAdress = text;
+                });
+              },
+            ).pSymmetric(h: 20),
+            const HeightBox(30),
+            InkWell(
+              child: Container(
+                width: 200,
+                height: 45,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Center(child: '비밀번호 재설정 코드 전송'.text.black.bold.size(20).make()),
               ),
-              child: Center(child: '확인'.text.black.bold.size(20).make()),
+              onTap: () {
+                authProvider.resetPassword(emailAdress);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: '비밀번호 재설정 메일을 보냈습니다.'.text.bold.white.size(20).make(),
+                  ),
+                );
+              },
             ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
+            const HeightBox(50),
+            InkWell(
+              child: Container(
+                width: 200,
+                height: 45,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Center(child: '뒤로가기'.text.black.bold.size(20).make()),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
