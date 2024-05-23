@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:usw_chat_bot_app/inquire_page/s_inquire_details.dart';
 import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class aboutInquirePage extends StatefulWidget {
-  const aboutInquirePage({super.key});
+class AboutInquirePage extends StatefulWidget {
+  const AboutInquirePage({super.key});
 
   @override
-  State<aboutInquirePage> createState() => _aboutInquirePageState();
+  State<AboutInquirePage> createState() => _AboutInquirePageState();
 }
 
-class _aboutInquirePageState extends State<aboutInquirePage> {
+class _AboutInquirePageState extends State<AboutInquirePage> {
   final String uid = FirebaseAuth.instance.currentUser!.uid;
   final _auth = FirebaseAuth.instance;
   User? loggedInUser;
@@ -39,14 +41,18 @@ class _aboutInquirePageState extends State<aboutInquirePage> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getUserInfo() async {
+  Future<List<Map<String, dynamic>>> getInquireList() async {
     var querySnapshot = await FirebaseFirestore.instance
         .collection('inquire')
-        .where('sender', isEqualTo: loggedInUser!.email)
+        .doc(loggedInUser!.email)
+        .collection('inquire_list')
         .get();
 
     return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
+        .map((doc) => {
+              ...doc.data() as Map<String, dynamic>,
+              'docId': doc.id, // 문서 ID를 추가하여 전달
+            })
         .toList();
   }
 
@@ -54,40 +60,78 @@ class _aboutInquirePageState extends State<aboutInquirePage> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       loginState: true,
+      title: '',
       child: FutureBuilder(
-        future: getUserInfo(),
+        future: getInquireList(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (snapshot.hasData) {
             var data = snapshot.data as List<Map<String, dynamic>>;
-            return data.isNotEmpty
-                ? ListView.builder(
+            return Column(
+              children: [
+                HeightBox(50),
+                Center(
+                  child: '문의 내역'.text.black.size(40).make(),
+                ),
+                HeightBox(30),
+                Expanded(
+                  child: ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       var document = data[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text(document['title']),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Type: ${document['type']}"),
-                              Text("Contents: ${document['contents']}"),
-                              Text("Timestamp: ${document['timestamp']}"),
-                            ],
-                          ),
-                        ),
+                      return Column(
+                        children: [
+                          const HeightBox(10),
+                          InkWell(
+                            child: Container(
+                              height: 80,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5),
+                                border:
+                                    Border.all(color: Colors.black, width: 2),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  '문의 제목 : '.text.black.bold.size(20).make(),
+                                  document['title']
+                                      .toString()
+                                      .text
+                                      .black
+                                      .size(20)
+                                      .make(),
+                                ],
+                              ).pOnly(left: 20),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => InquireDetails(
+                                    document: document,
+                                  ),
+                                ),
+                              );
+                            },
+                          ).pSymmetric(h: 10),
+                        ],
                       );
                     },
-                  )
-                : Center(
-                    child: '문의 내역이 없습니다'.text.black.bold.size(25).make(),
-                  );
+                  ),
+                ),
+              ],
+            );
           } else if (snapshot.hasError) {
-            return Center(child: Text('오류가 발생했습니다: ${snapshot.error}'));
+            return Center(
+              child: '오류가 발생했습니다: ${snapshot.error}'.text.black.size(25).make(),
+            );
           } else {
-            return const Center(child: Text('문의 내역이 없습니다'));
+            return Center(child: '문의 내역이 없습니다'.text.black.size(25).make());
           }
         },
       ),

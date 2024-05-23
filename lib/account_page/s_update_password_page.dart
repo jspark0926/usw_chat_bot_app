@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:usw_chat_bot_app/provider/auth_provider2.dart';
+import 'package:usw_chat_bot_app/provider/auth_data_provider.dart';
 import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -16,8 +16,8 @@ class _updatePasswordPageState extends State<updatePasswordPage> {
   // final firebaseAuth = FirebaseAuth.instance;
   late String newPassword = '';
   late String verifyPassword = '';
-  late AuthProvider2 authProvider =
-      Provider.of<AuthProvider2>(context, listen: false);
+  late AuthDataProvider authProvider =
+      Provider.of<AuthDataProvider>(context, listen: false);
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +80,19 @@ class _updatePasswordPageState extends State<updatePasswordPage> {
                   if(newPassword == verifyPassword) {
                     authProvider.passwordUpdate(newPassword);
                     Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: '비밀번호가 변경되었습니다'.text.bold.white.size(20).make(),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: '비밀번호가 일치하지 않습니다'.text.bold.white.size(20).make(),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
                   }
                 },
                 child: '저장'.text.black.size(20).make(),

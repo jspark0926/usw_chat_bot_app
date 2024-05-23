@@ -41,30 +41,37 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
     }
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     _controllerType.text = _controllerType.text.trim();
     _controllerTitle.text = _controllerTitle.text.trim();
     _controllerContents.text = _controllerContents.text.trim();
+
     if (loggedInUser != null) {
       if (_controllerType.text.isNotEmpty) {
         if (_controllerTitle.text.isNotEmpty) {
           if (_controllerContents.text.isNotEmpty) {
-            FirebaseFirestore.instance.collection('inquire').add({
+            // 기존 문서에 새로운 컬렉션 추가
+            DocumentReference docRef = FirebaseFirestore.instance
+                .collection('inquire')
+                .doc(loggedInUser!.email);
+
+            await docRef.collection('inquire_list').add({
               'type': _controllerType.text,
               'title': _controllerTitle.text,
               'contents': _controllerContents.text,
-              'sender': loggedInUser!.email,
               'timestamp': Timestamp.now(),
             });
+
             _controllerType.clear();
             _controllerTitle.clear();
             _controllerContents.clear();
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content:
-                '문의가 접수되었습니다'.text.bold.white.size(20).make(),
+                content: '문의가 접수되었습니다'.text.bold.white.size(20).make(),
               ),
             );
+
             Navigator.pop(context);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -94,6 +101,7 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
   Widget build(BuildContext context) {
     return DefaultLayout(
       loginState: true,
+      title: '',
       child: SingleChildScrollView(
         child: SafeArea(
           child: Column(
@@ -112,9 +120,7 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
                 maxLines: null,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 10,
-                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
                 ),
               ).pSymmetric(h: 20),
               const HeightBox(20),
@@ -132,9 +138,7 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
                 decoration: const InputDecoration(
                   // hintText: '제목',  //글자를 입력하면 사라진다.
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 10,
-                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
                 ),
               ).pSymmetric(h: 20),
               const HeightBox(20),
@@ -157,9 +161,7 @@ class _ReceiveInquirePageState extends State<ReceiveInquirePage> {
               ).pSymmetric(h: 20),
               const HeightBox(40),
               OutlinedButton(
-                onPressed: () {
-                  _sendMessage();
-                },
+                onPressed: _sendMessage,
                 child: '접수하기'.text.black.size(20).make(),
               ),
               const HeightBox(20),

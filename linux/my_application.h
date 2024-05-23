@@ -9,9 +9,9 @@ G_DECLARE_FINAL_TYPE(MyApplication, my_application, MY, APPLICATION,
 /**
  * my_application_new:
  *
- * Creates a new Flutter-based application.
+ * Creates w_text_field_design.dart new Flutter-based application.
  *
- * Returns: a new #MyApplication.
+ * Returns: w_text_field_design.dart new #MyApplication.
  */
 MyApplication* my_application_new();
 

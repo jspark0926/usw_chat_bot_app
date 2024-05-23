@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:usw_chat_bot_app/provider/auth_provider2.dart';
+import 'package:usw_chat_bot_app/provider/auth_data_provider.dart';
+import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../w_layout/w_default_Layout.dart';
-
-class FindPassword extends StatefulWidget {
-  const FindPassword({super.key});
+class UpdateEmail extends StatefulWidget {
+  const UpdateEmail({super.key});
 
   @override
-  State<FindPassword> createState() => _FindPasswordState();
+  State<UpdateEmail> createState() => _UpdateEmailState();
 }
 
-class _FindPasswordState extends State<FindPassword> {
-  late AuthProvider2 authProvider = Provider.of<AuthProvider2>(context, listen: false);
-  late var emailAdress = '';
+class _UpdateEmailState extends State<UpdateEmail> {
+  late AuthDataProvider authProvider =
+      Provider.of<AuthDataProvider>(context, listen: false);
+  late String emailAddress = '';
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +30,13 @@ class _FindPasswordState extends State<FindPassword> {
             const HeightBox(30),
             TextField(
               obscureText: false,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: '이메일 입력',
               ),
-              onChanged: (text){
+              onChanged: (text) {
                 setState(() {
-                  emailAdress = text;
+                  emailAddress = text;
                 });
               },
             ).pSymmetric(h: 20),
@@ -49,14 +49,16 @@ class _FindPasswordState extends State<FindPassword> {
                   color: Colors.grey,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: Center(child: '비밀번호 재설정 코드 전송'.text.black.bold.size(20).make()),
+                child: Center(
+                  child: '이메일 재설정'.text.black.bold.size(20).make(),
+                ),
               ),
-              onTap: () {
-                authProvider.resetPassword(emailAdress);
+              onTap: () async {
+                authProvider.VerifyBeforeUpdateEmail(emailAddress);
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: '비밀번호 재설정 메일을 보냈습니다.'.text.bold.white.size(20).make(),
+                    content: '이메일 변경이 완료되었습니다'.text.bold.white.size(20).make(),
                   ),
                 );
               },

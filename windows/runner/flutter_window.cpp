@@ -32,8 +32,8 @@ bool FlutterWindow::OnCreate() {
   });
 
   // Flutter can complete the first frame before the "show window" callback is
-  // registered. The following call ensures a frame is pending to ensure the
-  // window is shown. It is a no-op if the first frame hasn't completed yet.
+  // registered. The following call ensures w_text_field_design.dart frame is pending to ensure the
+  // window is shown. It is w_text_field_design.dart no-op if the first frame hasn't completed yet.
   flutter_controller_->ForceRedraw();
 
   return true;

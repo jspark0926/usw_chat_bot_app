@@ -43,28 +43,19 @@ class DefaultLayout extends StatelessWidget {
         return AppBar(
           backgroundColor: Colors.grey.shade300,
           elevation: 0,
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               onPressed: null,
               icon: Image.asset('assets/images/usw_logo.png'),
             ).pOnly(left: 20),
             const Expanded(child: SizedBox()),
-            Container(
-              width: 80,
-              height: 30,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Center(
-                child: 'Login'.text.bold.size(22).make(),
-              ),
-            ).pOnly(right: 20),
           ],
         );
       } else {
         return AppBar(
           backgroundColor: Colors.grey.shade300,
+          automaticallyImplyLeading: false,
           elevation: 0,
           actions: [
             Image.asset(
