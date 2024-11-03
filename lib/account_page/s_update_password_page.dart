@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:usw_chat_bot_app/provider/auth_data_provider.dart';
-import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/common/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class updatePasswordPage extends StatefulWidget {

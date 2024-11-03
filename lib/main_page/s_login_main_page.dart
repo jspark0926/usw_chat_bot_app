@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:usw_chat_bot_app/main_page/chat_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import 'chat_screen.dart';
+
 class loginMainPage extends StatefulWidget {
   const loginMainPage({super.key});
 
@@ -15,6 +17,6 @@ class _loginMainPageState extends State<loginMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChatScreen();
+    return ChatRoomsScreen();
   }
 }

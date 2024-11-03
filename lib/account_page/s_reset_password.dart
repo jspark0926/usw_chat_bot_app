@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:usw_chat_bot_app/provider/auth_data_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../w_layout/w_default_Layout.dart';
+import '../common/w_default_Layout.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});

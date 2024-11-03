@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/common/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class logoutMainPage extends StatefulWidget {

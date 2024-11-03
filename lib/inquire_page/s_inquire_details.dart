@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/common/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class InquireDetails extends StatelessWidget {
@@ -29,9 +29,10 @@ class InquireDetails extends StatelessWidget {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: Colors.black,
-                  width: 3,
+                  width: 1,
                 ),
                 color: Colors.white,
               ),
@@ -56,9 +57,10 @@ class InquireDetails extends StatelessWidget {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: Colors.black,
-                  width: 3,
+                  width: 1,
                 ),
                 color: Colors.white,
               ),
@@ -83,9 +85,10 @@ class InquireDetails extends StatelessWidget {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: Colors.black,
-                  width: 3,
+                  width: 1,
                 ),
                 color: Colors.white,
               ),
@@ -110,15 +113,44 @@ class InquireDetails extends StatelessWidget {
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: Colors.black,
-                  width: 3,
+                  width: 1,
                 ),
                 color: Colors.white,
               ),
               child: Align(
                 alignment: Alignment.topLeft,
                 child: '${document['contents']}'
+                    .text
+                    .black
+                    .size(20)
+                    .make()
+                    .pSymmetric(h: 10, v: 10),
+              ),
+            ).pSymmetric(h: 20),
+            HeightBox(50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                '답변 내용'.text.black.size(18).make().pOnly(left: 20),
+              ],
+            ),
+            const HeightBox(5),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.black,
+                  width: 1,
+                ),
+                color: Colors.white,
+              ),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: '확인 결과 컴퓨터 학부의 전화번호가 없는 것으로 확인되어 전화번호를 추가하였습니다 감사합니다'
                     .text
                     .black
                     .size(20)

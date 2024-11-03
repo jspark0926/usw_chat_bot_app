@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:usw_chat_bot_app/account_page/s_update_email.dart';
 import 'package:usw_chat_bot_app/account_page/s_update_password_page.dart';
 import 'package:usw_chat_bot_app/inquire_page/s_inquire_list_page.dart';
-import 'package:usw_chat_bot_app/inquire_page/s_receive_inquire_page.dart';
-import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/inquire_page/s_send_inquire_page.dart';
+import 'package:usw_chat_bot_app/common/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class loginUserPage extends StatefulWidget {
@@ -64,30 +64,60 @@ class _loginUserPageState extends State<loginUserPage> {
                       ),
                     ),
                     const HeightBox(30),
-                    if (loggedInUser!.email != null) // Add null check
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.black, width: 2,),
-                        ),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: loggedInUser!.email!.text.black.bold
-                              .size(12)
-                              .make().p(10),
-                        ),
-                      ).pSymmetric(h: 100),
+                    // Add null check
+                    Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 2,
+                              ),
+                            ),
+                            child: loggedInUser!.email != null
+                                ? Align(
+                                    alignment: Alignment.center,
+                                    child: loggedInUser!.email!.text.black.bold
+                                        .size(12)
+                                        .make()
+                                        .p(10),
+                                  )
+                                : Align(
+                                    alignment: Alignment.center,
+                                    child: '익명 사용자'
+                                        .text
+                                        .black
+                                        .bold
+                                        .size(15)
+                                        .make()
+                                        .p(10),
+                                  ))
+                        .pSymmetric(h: 100),
                     const HeightBox(30),
                     InkWell(
                       onTap: () {
-                        setState(() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const UpdateEmail(),
+                        if (loggedInUser!.email != null){
+                          setState(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const UpdateEmail(),
+                              ),
+                            );
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: '익명 사용자는 이메일 변경 기능을 이용하실 수 없습니다'
+                                  .text
+                                  .bold
+                                  .white
+                                  .size(20)
+                                  .make(),
+                              duration: Duration(seconds: 1),
                             ),
                           );
-                        });
+                        }
                       },
                       child: Container(
                         width: double.infinity,
@@ -96,21 +126,36 @@ class _loginUserPageState extends State<loginUserPage> {
                           color: Colors.grey.shade400,
                         ),
                         child: Center(
-                          child: '이메일 변경'.text.black.size(20).make(),
+                          child: '이메일 변경'.text.black.size(18).make(),
                         ),
                       ),
                     ),
-                    HeightBox(5),
+                    const HeightBox(5),
                     InkWell(
                       onTap: () {
-                        setState(() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const updatePasswordPage(),
+                        if(loggedInUser!.email != null){
+                          setState(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const updatePasswordPage(),
+                              ),
+                            );
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: '익명 사용자는 비밀번호 변경 기능을 이용하실 수 없습니다'
+                                  .text
+                                  .bold
+                                  .white
+                                  .size(18)
+                                  .make(),
+                              duration: Duration(seconds: 1),
                             ),
                           );
-                        });
+                        }
                       },
                       child: Container(
                         width: double.infinity,
@@ -126,14 +171,29 @@ class _loginUserPageState extends State<loginUserPage> {
                     const HeightBox(5),
                     InkWell(
                       onTap: () {
-                        setState(() {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AboutInquirePage(),
+                        if (loggedInUser!.email != null) {
+                          setState(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AboutInquirePage(),
+                              ),
+                            );
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: '익명 사용자는 문의 조회 기능을 이용하실 수 없습니다'
+                                  .text
+                                  .bold
+                                  .white
+                                  .size(18)
+                                  .make(),
+                              duration: Duration(seconds: 1),
                             ),
                           );
-                        });
+                        }
                       },
                       child: Container(
                         width: double.infinity,
@@ -160,14 +220,16 @@ class _loginUserPageState extends State<loginUserPage> {
                             );
                           });
                         } else {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: '익명 사용자는 문의 기능을 이용하실 수 없습니다'
+                              content: '익명 사용자는 문의 접수 기능을 이용하실 수 없습니다'
                                   .text
                                   .bold
                                   .white
-                                  .size(20)
+                                  .size(18)
                                   .make(),
+                              duration: Duration(seconds: 1),
                             ),
                           );
                         }

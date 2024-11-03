@@ -4,37 +4,73 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthDataProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _user;
 
-  // 사용자 상태 반환
-  User? get user => _auth.currentUser;
-
-  // 인증 상태 변경을 감지하고 UI 업데이트
-  void updateUser() {
-    notifyListeners();
+  AuthDataProvider() {
+    _auth.authStateChanges().listen((User? user) {
+      _user = user;
+      notifyListeners();
+    });
   }
 
-  Future<void> VerifyBeforeUpdateEmail(String email) async {
-    await user?.verifyBeforeUpdateEmail(email);
+  User? get user => _user;
+
+  Future<void> verifyBeforeUpdateEmail(String email) async {
+    if (user != null) {
+      try {
+        await _auth.setLanguageCode("en");
+        await user!.verifyBeforeUpdateEmail(email);
+        print('verifyBeforeUpdateEmail success: $email');
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'requires-recent-login') {
+          throw FirebaseAuthException(
+              code: 'requires-recent-login',
+              message: 'This operation is sensitive and requires recent authentication. Log in again before retrying this request.');
+        } else {
+          rethrow;
+        }
+      }
+    }
   }
 
   Future<void> reauthenticate(String email, String password) async {
     if (user != null) {
-      final cred = EmailAuthProvider.credential(email: email, password: password);
-      await user!.reauthenticateWithCredential(cred);
+      try {
+        final cred = EmailAuthProvider.credential(email: email, password: password);
+        await user!.reauthenticateWithCredential(cred);
+        print('Reauthentication success');
+      } catch (e) {
+        print('Reauthentication failed: $e');
+        rethrow;
+      }
     }
   }
 
-  // 로그인 함수
-  Future<void> signIn() async {
-    // Firebase 로그인 로직
+  Future<void> signIn(String email, String password) async {
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      notifyListeners();
+      print('Sign-in successful');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw FirebaseAuthException(
+            code: 'user-not-found', message: 'No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        throw FirebaseAuthException(
+            code: 'wrong-password', message: 'Wrong password provided.');
+      } else {
+        rethrow;
+      }
+    }
   }
 
-  // 로그아웃 함수
   Future<void> signOut() async {
-    // Firebase 로그아웃 로직
+    await _auth.signOut();
+    _user = null;
+    notifyListeners();
   }
 
-  Future<void> passwordUpdate(password) async {
+  Future<void> passwordUpdate(String password) async {
     User? _user = _auth.currentUser;
     if (_user != null) {
       await _user.updatePassword(password);
@@ -49,21 +85,19 @@ class AuthDataProvider extends ChangeNotifier {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
-
   Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-    // Create w_text_field_design.dart new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCredential = await _auth.signInWithCredential(credential);
+      notifyListeners();
+      return userCredential;
+    }
+    throw FirebaseAuthException(
+        code: 'ERROR_ABORTED_BY_USER', message: 'Sign in aborted by user');
   }
 }

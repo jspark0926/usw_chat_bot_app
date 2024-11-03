@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:usw_chat_bot_app/provider/auth_data_provider.dart';
 import 'package:usw_chat_bot_app/user_page/w_userPage.dart';
-import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/common/w_default_Layout.dart';
 import 'options/firebase_options.dart';
 import 'main_page/w_main_page.dart';
 

@@ -13,6 +13,8 @@ class userPage extends StatefulWidget {
 }
 
 class _userPageState extends State<userPage> {
+  late AuthDataProvider authProvider =
+  Provider.of<AuthDataProvider>(context, listen: false);
 
   @override
   Widget build(BuildContext context) {
@@ -23,5 +25,6 @@ class _userPageState extends State<userPage> {
     } else {
       return const LogoutUserPage();
     }
+
   }
 }

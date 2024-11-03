@@ -1,0 +1,241 @@
+import 'package:flutter/material.dart';
+import 'package:springboot_mongodb/services/api_service.dart';
+import 'package:springboot_mongodb/services/websocket_service.dart';
+import 'dart:convert';
+
+void main() {
+  runApp(ChatBotApp());
+}
+
+class ChatBotApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Chat Bot App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: ChatRoomsScreen(),
+    );
+  }
+}
+
+class ChatRoomsScreen extends StatefulWidget {
+  @override
+  _ChatRoomsScreenState createState() => _ChatRoomsScreenState();
+}
+
+class _ChatRoomsScreenState extends State<ChatRoomsScreen> {
+  final ApiService apiService = ApiService();
+  final TextEditingController _chatRoomController = TextEditingController();
+  List<dynamic> _chatRooms = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChatRooms();
+  }
+
+  void _loadChatRooms() async {
+    try {
+      final chatRooms = await apiService.getChatRooms();
+      setState(() {
+        _chatRooms = chatRooms;
+      });
+      // 자동으로 특정 채팅방으로 이동
+      _navigateToSpecificChatRoom('jspark_0926@naver.com');
+    } catch (e) {
+      print("Exception caught while loading chat rooms: $e");
+    }
+  }
+
+  void _createChatRoom() async {
+    final chatTitle = _chatRoomController.text;
+    if (chatTitle.isNotEmpty) {
+      print("Create button clicked. Chat title: $chatTitle");
+      try {
+        final chatRoom = await apiService.createChatRoom(chatTitle);
+        print("Chat room created successfully with id: ${chatRoom['objectId']}");
+        _chatRoomController.clear();
+        _loadChatRooms();
+      } catch (e) {
+        print("Exception caught while creating chat room: $e");
+      }
+    } else {
+      print("Chat title is empty");
+    }
+  }
+
+  void _navigateToChatRoom(BuildContext context, String chatRoomId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatRoomScreen(chatRoomId: chatRoomId),
+      ),
+    );
+  }
+
+  void _navigateToSpecificChatRoom(String email) {
+    final chatRoom = _chatRooms.firstWhere(
+          (room) => room['chatTitle'] == email,
+      orElse: () => null,
+    );
+
+    if (chatRoom != null) {
+      _navigateToChatRoom(context, chatRoom['objectId']);
+    } else {
+      print("Chat room with email $email not found.");
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Chat Rooms'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _chatRoomController,
+                    decoration: InputDecoration(hintText: 'Enter chat room name'),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _createChatRoom,
+                  child: Text('Create'),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _chatRooms.length,
+              itemBuilder: (context, index) {
+                final chatRoom = _chatRooms[index];
+                return ListTile(
+                  title: Text(chatRoom['chatTitle']),
+                  onTap: () => _navigateToChatRoom(context, chatRoom['objectId']),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ChatRoomScreen extends StatefulWidget {
+  final String chatRoomId;
+
+  ChatRoomScreen({required this.chatRoomId});
+
+  @override
+  _ChatRoomScreenState createState() => _ChatRoomScreenState();
+}
+
+class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  final ApiService apiService = ApiService();
+  final WebSocketService webSocketService = WebSocketService();
+  List<dynamic> _messages = [];
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMessages();
+    _connectWebSocket();
+  }
+
+  void _loadMessages() async {
+    try {
+      final messages = await apiService.getChatRoomMessages(widget.chatRoomId);
+      setState(() {
+        _messages = messages;
+      });
+    } catch (e) {
+      print("Exception caught while loading messages: $e");
+    }
+  }
+
+  void _connectWebSocket() {
+    webSocketService.connect(widget.chatRoomId, (message) {
+      print("Received message: $message");
+      setState(() {
+        try {
+          final parsedMessage = jsonDecode(message);
+          _messages.add(parsedMessage);
+        } catch (e) {
+          print("Error parsing message: $e");
+          _messages.add({'question': message, 'answer': ''});
+        }
+      });
+    });
+  }
+
+  void _sendMessage() {
+    final message = _messageController.text;
+    if (message.isNotEmpty) {
+      print("Sending message: $message");
+      webSocketService.sendMessage(message, widget.chatRoomId);
+      setState(() {
+        _messages.add({'question': message, 'answer': ''});
+        _messageController.clear();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    webSocketService.disconnect();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Chat Room'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return ListTile(
+                  title: Text("Me: ${message['question']}"),
+                  subtitle: Text("Bot: ${message['answer']}"),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: InputDecoration(hintText: 'Enter message'),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _sendMessage,
+                  child: Text('Send'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:usw_chat_bot_app/inquire_page/s_inquire_details.dart';
-import 'package:usw_chat_bot_app/w_layout/w_default_Layout.dart';
+import 'package:usw_chat_bot_app/common/w_default_Layout.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class AboutInquirePage extends StatefulWidget {
@@ -84,7 +84,7 @@ class _AboutInquirePageState extends State<AboutInquirePage> {
                       var document = data[index];
                       return Column(
                         children: [
-                          const HeightBox(10),
+                          const HeightBox(15),
                           InkWell(
                             child: Container(
                               height: 80,
@@ -93,12 +93,12 @@ class _AboutInquirePageState extends State<AboutInquirePage> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(5),
                                 border:
-                                    Border.all(color: Colors.black, width: 2),
+                                    Border.all(color: Colors.black, width: 1),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  '문의 제목 : '.text.black.bold.size(20).make(),
+                                  '문의 제목 : '.text.black.size(20).make(),
                                   document['title']
                                       .toString()
                                       .text
